@@ -1,0 +1,6 @@
+.venv
+.ipynb_checkpoints/
+__pycache__/
+
+# Training outputs (models, plots, metrics) from train.py
+output/

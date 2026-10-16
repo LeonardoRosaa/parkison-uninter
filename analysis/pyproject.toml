@@ -1,0 +1,26 @@
+[project]
+name = "parkison-analysis"
+version = "0.1.0"
+description = "Trains the voice classifier the parkison API loads from models/audio.pkl"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "imbalanced-learn>=0.14.2",
+    "matplotlib>=3.11.2",
+    "pandas>=3.0.6",
+    # Must match the API's pin (../pyproject.toml): it unpickles the model.
+    "scikit-learn==1.7.2",
+]
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "ruff>=0.14.10",
+    "ty>=0.0.9",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ty.environment]
+python-version = "3.11"
