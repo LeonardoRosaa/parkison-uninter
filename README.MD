@@ -33,7 +33,8 @@ Services:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` | required | Where results are stored and published |
+| `REDIS_URL` | optional | Single Redis connection URL; when set, the four variables below are not needed |
+| `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` | required unless `REDIS_URL` is set | Where results are stored and published |
 | `CORS_ORIGINS` | required | Comma-separated origins allowed to call the API |
 | `AUDIO_MODEL_PATH` | required | Pickled classifier loaded at start-up, e.g. `models/audio.pkl` |
 | `WS_TIMEOUT_SECONDS` | `300` | How long a WebSocket waits for a result |
@@ -41,6 +42,22 @@ Services:
 The production compose file additionally reads `PUBLIC_API_BASE`,
 `PUBLIC_WS_URL` and `PUBLIC_LOCALE` (baked into the frontend build), the
 `*_PORT` host mappings and `UVICORN_WORKERS`.
+
+## Deploy on Render (free tier)
+
+[render.yaml](render.yaml) defines the API (Docker), the static frontend and a
+Key Value (Redis) instance.
+
+1. Push the repo to GitHub.
+2. In Render: **New → Blueprint**, pick the repo, and apply.
+3. Open `https://parkison-web.onrender.com`.
+
+Notes:
+- If Render adds a suffix to a service name, update `CORS_ORIGINS`,
+  `VITE_API_BASE` and `VITE_WS_URL` in `render.yaml` to the real URLs and push.
+- The free API sleeps after 15 idle minutes; the next request waits about a
+  minute for it to wake.
+- It runs one worker to stay within the free instance's memory.
 
 ## Training the model
 
