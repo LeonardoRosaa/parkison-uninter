@@ -44,11 +44,17 @@ class RedisClient:
         return decode_result(raw) if raw else None
 
     def set_status(
-        self, request_id: str, status: AnalysisStatus, metrics: dict | None = None
+        self,
+        request_id: str,
+        status: AnalysisStatus,
+        metrics: dict | None = None,
+        out_of_range: list[str] | None = None,
     ) -> None:
         result: dict = {"status": status}
         if metrics is not None:
             result["metrics"] = metrics
+        if out_of_range is not None:
+            result["out_of_range"] = out_of_range
         value = json.dumps(result)
         self._sync.set(name=request_id, value=value, ex=STATUS_TTL)
         self._sync.publish(_status_channel(request_id), value)

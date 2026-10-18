@@ -59,17 +59,17 @@ class VoiceFeatures:
     """
     The model's inputs for one recording.
 
-    `values` is keyed by the training set's column names and kept in the
-    column order the model was fitted on. `pitch_measured` is False when
-    the pitch columns hold fallback values rather than measurements.
+    `values` is keyed by feature name; the model reads the ones it was
+    trained on by name (see `row`). `pitch_measured` is False when the pitch
+    columns hold fallback values rather than measurements.
     """
 
     values: dict[str, float]
     pitch_measured: bool
 
-    def model_row(self) -> list[float]:
-        """The values as one input row, in the model's column order."""
-        return list(self.values.values())
+    def row(self, names: list[str]) -> list[float]:
+        """The named values as one input row, in the order of `names`."""
+        return [self.values[name] for name in names]
 
 
 def shutdown_executor() -> None:

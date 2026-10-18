@@ -45,7 +45,7 @@ def analysis(path: str, request_id: UUID):
 
     features = extract_features(path, request_id)
     _log_features(request_id, features)
-    status = classify(features)
+    classification = classify(features)
 
     # The model needs numbers, so pitch falls back to fixed values during
     # extraction; the user must not be shown measurements derived from a
@@ -58,4 +58,9 @@ def analysis(path: str, request_id: UUID):
         shimmer=shown.get("MDVP:Shimmer", unmeasured),
         hnr_db=shown.get("HNR", unmeasured),
     )
-    redis_client.set_status(str(request_id), status, metrics=metrics)
+    redis_client.set_status(
+        str(request_id),
+        classification.status,
+        metrics=metrics,
+        out_of_range=classification.out_of_range or None,
+    )

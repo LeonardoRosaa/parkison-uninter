@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import pytest
 
-from app.settings import cors_origins, required_env
+from app.settings import audio_model_path, cors_origins, required_env
 
 
 def test_required_env_returns_value(monkeypatch):
@@ -27,3 +29,16 @@ def test_cors_origins_raises_when_missing(monkeypatch):
         RuntimeError, match="Missing required environment variable: CORS_ORIGINS"
     ):
         cors_origins()
+
+
+def test_audio_model_path_reads_the_variable(monkeypatch):
+    monkeypatch.setenv("AUDIO_MODEL_PATH", "models/audio.pkl")
+    assert audio_model_path() == Path("models/audio.pkl")
+
+
+def test_audio_model_path_raises_when_missing(monkeypatch):
+    monkeypatch.delenv("AUDIO_MODEL_PATH", raising=False)
+    with pytest.raises(
+        RuntimeError, match="Missing required environment variable: AUDIO_MODEL_PATH"
+    ):
+        audio_model_path()

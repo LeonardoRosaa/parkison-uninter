@@ -153,7 +153,7 @@ describe('createAudioCaptureHook', () => {
     expect(getUserMediaImpl).not.toHaveBeenCalled();
   });
 
-  it('requests mono audio and reports an error when permission is denied', async () => {
+  it('requests unprocessed mono audio and reports an error when permission is denied', async () => {
     getUserMediaImpl.mockRejectedValue(new DOMException('denied', 'NotAllowedError'));
 
     const onStateChange = vi.fn();
@@ -162,7 +162,14 @@ describe('createAudioCaptureHook', () => {
     const hook = makeHook();
     await hook.start({ onStateChange, onError });
 
-    expect(getUserMediaImpl).toHaveBeenCalledWith({ audio: { channelCount: 1 } });
+    expect(getUserMediaImpl).toHaveBeenCalledWith({
+      audio: {
+        channelCount: 1,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    });
     expect(onStateChange).toHaveBeenCalledWith('error');
     expect(onError).toHaveBeenCalledWith(expect.stringContaining('Upload'));
   });

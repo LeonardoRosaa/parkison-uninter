@@ -48,6 +48,28 @@ describe('useAnalysisSocket', () => {
     expect(parseSocketPayload(new Uint8Array([1, 2, 3]))).toEqual({ kind: 'pending' });
   });
 
+  it('reads an inconclusive payload with the features that were out of range', () => {
+    expect(
+      parseSocketPayload(
+        JSON.stringify({
+          status: 'inconclusive',
+          out_of_range: ['DFA', 7, 'MDVP:Shimmer'],
+          metrics: { f0_hz: 154.2, jitter_percent: 0.39, shimmer_percent: 5, hnr_db: 21.4 }
+        })
+      )
+    ).toEqual({
+      kind: 'inconclusive',
+      outOfRange: ['DFA', 'MDVP:Shimmer'],
+      metrics: { f0Hz: 154.2, jitterPercent: 0.39, shimmerPercent: 5, hnrDb: 21.4 }
+    });
+
+    expect(parseSocketPayload(JSON.stringify({ status: 'inconclusive' }))).toEqual({
+      kind: 'inconclusive',
+      outOfRange: [],
+      metrics: undefined
+    });
+  });
+
   it('keeps the voice metrics delivered with a successful result', () => {
     const parsed = parseSocketPayload(
       JSON.stringify({

@@ -1,6 +1,6 @@
 import numpy as np
 
-from app.services.audio.features import longest_voiced_segment
+from app.services.audio.features import VoiceFeatures, longest_voiced_segment
 
 
 class FakePitch:
@@ -51,3 +51,11 @@ def test_longest_voiced_segment_handles_run_extending_to_end():
 
     assert segment is not None
     np.testing.assert_allclose(segment, (0.02, 0.04))
+
+
+def test_row_picks_the_named_values_in_the_requested_order():
+    features = VoiceFeatures(
+        values={"HNR": 21.0, "MDVP:Fo(Hz)": 120.0, "DFA": 0.7}, pitch_measured=True
+    )
+
+    assert features.row(["DFA", "HNR"]) == [0.7, 21.0]

@@ -45,6 +45,7 @@ export interface AnalysisMetrics {
 export type AnalysisUpdate =
   | { kind: 'pending' }
   | { kind: 'result'; healthy: boolean; metrics?: AnalysisMetrics }
+  | { kind: 'inconclusive'; outOfRange: string[]; metrics?: AnalysisMetrics }
   | { kind: 'failed'; reason: 'error' | 'timeout' };
 
 /**
@@ -91,6 +92,17 @@ export function parseSocketPayload(rawData: unknown): AnalysisUpdate {
     return {
       kind: 'result',
       healthy: status === 'health',
+      metrics: parseMetrics(payload?.['metrics'])
+    };
+  }
+
+  if (status === 'inconclusive') {
+    const outOfRange = payload?.['out_of_range'];
+    return {
+      kind: 'inconclusive',
+      outOfRange: Array.isArray(outOfRange)
+        ? outOfRange.filter((name): name is string => typeof name === 'string')
+        : [],
       metrics: parseMetrics(payload?.['metrics'])
     };
   }

@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-_DEFAULT_MODEL_PATH = Path(__file__).resolve().parents[1] / "models" / "audio.pkl"
-
 
 def required_env(name: str) -> str:
     value = os.getenv(name)
@@ -27,4 +25,4 @@ def ws_timeout_seconds() -> float:
 
 
 def audio_model_path() -> Path:
-    return Path(os.getenv("AUDIO_MODEL_PATH", str(_DEFAULT_MODEL_PATH)))
+    return Path(required_env("AUDIO_MODEL_PATH"))

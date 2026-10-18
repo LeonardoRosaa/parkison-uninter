@@ -98,6 +98,28 @@ describe('AnalysisPage', () => {
     );
   });
 
+  it('says the result is inconclusive and names each unusual measurement once', async () => {
+    const { handlers } = renderPage();
+
+    handlers()?.onMessage?.({
+      kind: 'inconclusive',
+      outOfRange: ['MDVP:Shimmer', 'Shimmer:APQ3', 'DFA', 'not-a-known-feature'],
+      metrics: METRICS
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Inconclusive result.' })).toBeInTheDocument()
+    );
+    expect(screen.queryByTestId('spinner')).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+    const unusual = screen.getAllByRole('listitem').map((item) => item.textContent?.trim());
+    expect(unusual).toContain('Shimmer');
+    expect(unusual).toContain('DFA');
+    expect(unusual).toContain('not-a-known-feature');
+    expect(unusual.filter((label) => label === 'Shimmer')).toHaveLength(1);
+    expect(await screen.findByRole('list', { name: 'Voice measurements' })).toBeInTheDocument();
+  });
+
   it('keeps the result when the socket closes after delivering it', async () => {
     const { handlers } = renderPage();
 

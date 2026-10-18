@@ -5,6 +5,9 @@ train:
 notebook:
 	uv run jupyter notebook notebook.ipynb
 
+test:
+	uv run pytest
+
 linter:
 	uv run ruff check .
 

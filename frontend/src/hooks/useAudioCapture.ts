@@ -154,7 +154,14 @@ export function createAudioCaptureHook({
     }
 
     try {
-      stream = await getUserMediaImpl({ audio: { channelCount: 1 } });
+      stream = await getUserMediaImpl({
+        audio: {
+          channelCount: 1,
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        }
+      });
     } catch {
       fail();
       return;

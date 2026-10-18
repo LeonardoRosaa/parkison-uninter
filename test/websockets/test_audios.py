@@ -56,6 +56,19 @@ def test_websocket_sends_result_with_metrics_and_closes(monkeypatch):
     redis_stub.watch_result.assert_called_once_with(str(request_id))
 
 
+def test_websocket_sends_inconclusive_result_and_closes(monkeypatch):
+    request_id = UUID("33333333-3333-3333-3333-333333333333")
+    result = {"status": "inconclusive", "metrics": METRICS, "out_of_range": ["DFA"]}
+    monkeypatch.setattr(websocket_module, "redis_client", _redis_stub(result))
+
+    client = _build_client()
+    with client.websocket_connect(f"/ws/{request_id}") as websocket:
+        assert websocket.receive_json() == {"request_id": str(request_id), **result}
+
+        with pytest.raises(WebSocketDisconnect):
+            websocket.receive_json()
+
+
 def test_websocket_forwards_loading_updates_until_the_result_arrives(monkeypatch):
     request_id = UUID("11111111-1111-1111-1111-111111111111")
     redis_stub = _redis_stub(

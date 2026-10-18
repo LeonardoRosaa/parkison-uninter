@@ -71,6 +71,19 @@ def test_set_status_stores_with_ttl_and_publishes_the_same_result():
     assert decode_result(published.encode("utf-8")) == {"status": "loading"}
 
 
+def test_set_status_stores_the_out_of_range_features_of_an_inconclusive_result():
+    sync_driver = Mock()
+    client = _client_with_drivers(sync_driver=sync_driver)
+
+    client.set_status("id-1", AnalysisStatus.INCONCLUSIVE, out_of_range=["DFA"])
+
+    stored = sync_driver.set.call_args.kwargs["value"]
+    assert decode_result(stored.encode("utf-8")) == {
+        "status": "inconclusive",
+        "out_of_range": ["DFA"],
+    }
+
+
 def test_decode_result_accepts_bare_status_strings_stored_before_metrics():
     assert decode_result(b"nonhealthy") == {"status": "nonhealthy"}
 

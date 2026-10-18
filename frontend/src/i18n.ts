@@ -32,6 +32,10 @@ export interface AppTexts {
   statusUploadFailed: string;
   finalHealthPassed: string;
   finalHealthFailed: string;
+  finalInconclusive: string;
+  inconclusiveDetail: string;
+  /** Plain-language label for each feature the server may report as out of range. */
+  featureLabels: Record<string, string>;
   heroEyebrow: string;
   heroTitle: string;
   heroSubtitle: string;
@@ -87,6 +91,26 @@ const EN_TRANSLATIONS: Translations = {
     statusUploadFailed: 'Audio upload failed.',
     finalHealthPassed: 'Health check passed. Analysis completed successfully.',
     finalHealthFailed: 'Health check failed. Analysis completed with issues.',
+    finalInconclusive: 'Inconclusive result.',
+    inconclusiveDetail:
+      'This recording is unlike the ones the model learned from, so it cannot give an answer. Unusual measurements:',
+    featureLabels: {
+      'MDVP:Jitter(%)': 'Jitter',
+      'MDVP:Jitter(Abs)': 'Jitter',
+      'MDVP:RAP': 'Jitter',
+      'MDVP:PPQ': 'Jitter',
+      'Jitter:DDP': 'Jitter',
+      'MDVP:Shimmer': 'Shimmer',
+      'MDVP:Shimmer(dB)': 'Shimmer',
+      'Shimmer:APQ3': 'Shimmer',
+      'Shimmer:APQ5': 'Shimmer',
+      'MDVP:APQ': 'Shimmer',
+      'Shimmer:DDA': 'Shimmer',
+      'NHR': 'Voice clarity',
+      'HNR': 'Voice clarity',
+      'RPDE': 'RPDE',
+      'DFA': 'DFA'
+    },
     heroEyebrow: 'Minimal Signal Workflow',
     heroTitle: 'Speech Analysis Monitor',
     heroSubtitle: 'A stripped-back workspace for one-file upload and real-time analysis feedback.',
@@ -159,6 +183,26 @@ const PT_BR_TRANSLATIONS: Translations = {
     statusUploadFailed: 'Falha no envio do áudio.',
     finalHealthPassed: 'Verificação aprovada. Análise concluída com sucesso.',
     finalHealthFailed: 'Verificação reprovada. Análise concluída com problemas.',
+    finalInconclusive: 'Resultado inconclusivo.',
+    inconclusiveDetail:
+      'Esta gravação é diferente das que o modelo usou para aprender, então ele não consegue dar uma resposta. Medidas incomuns:',
+    featureLabels: {
+      'MDVP:Jitter(%)': 'Jitter',
+      'MDVP:Jitter(Abs)': 'Jitter',
+      'MDVP:RAP': 'Jitter',
+      'MDVP:PPQ': 'Jitter',
+      'Jitter:DDP': 'Jitter',
+      'MDVP:Shimmer': 'Shimmer',
+      'MDVP:Shimmer(dB)': 'Shimmer',
+      'Shimmer:APQ3': 'Shimmer',
+      'Shimmer:APQ5': 'Shimmer',
+      'MDVP:APQ': 'Shimmer',
+      'Shimmer:DDA': 'Shimmer',
+      'NHR': 'Clareza da voz',
+      'HNR': 'Clareza da voz',
+      'RPDE': 'RPDE',
+      'DFA': 'DFA'
+    },
     heroEyebrow: 'Fluxo Mínimo de Sinal',
     heroTitle: 'Monitor de Análise de Fala',
     heroSubtitle: 'Um espaço enxuto para envio de um arquivo e feedback da análise em tempo real.',

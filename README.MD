@@ -21,9 +21,12 @@ Services:
 - `POST /audios` — upload one audio file (`multipart/form-data`, field `file`,
   any `audio/*` type). Returns `{ "filename", "uuid" }`.
 - `WS /ws/{uuid}` — follow that upload. Each message is
-  `{ "request_id", "status", "metrics"? }`. `status` is `loading` while the
-  analysis runs and ends with `health`, `nonhealthy`, `error` or `timeout`,
-  after which the socket closes.
+  `{ "request_id", "status", "metrics"?, "out_of_range"? }`. `status` is
+  `loading` while the analysis runs and ends with `health`, `nonhealthy`,
+  `inconclusive`, `error` or `timeout`, after which the socket closes.
+  `inconclusive` means the recording is far outside the range the model was
+  trained on, so it gives no answer; `out_of_range` then names the features
+  responsible.
 - `GET /health` — liveness check.
 
 ## Configuration
@@ -32,8 +35,8 @@ Services:
 | --- | --- | --- |
 | `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` | required | Where results are stored and published |
 | `CORS_ORIGINS` | required | Comma-separated origins allowed to call the API |
+| `AUDIO_MODEL_PATH` | required | Pickled classifier loaded at start-up, e.g. `models/audio.pkl` |
 | `WS_TIMEOUT_SECONDS` | `300` | How long a WebSocket waits for a result |
-| `AUDIO_MODEL_PATH` | `models/audio.pkl` | Pickled classifier loaded at start-up |
 
 The production compose file additionally reads `PUBLIC_API_BASE`,
 `PUBLIC_WS_URL` and `PUBLIC_LOCALE` (baked into the frontend build), the
