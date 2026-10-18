@@ -2,9 +2,6 @@ train:
 	uv sync
 	uv run python train.py
 
-notebook:
-	uv run jupyter notebook notebook.ipynb
-
 test:
 	uv run pytest
 

@@ -4,24 +4,21 @@ Trains the classifier the API in the parent directory loads from
 `../models/audio.pkl`. This is a standalone uv project: its dependencies
 (pandas, matplotlib, Jupyter) are not part of the API.
 
-- The datasets are not part of the project. `train.py` and the notebook read
+- The datasets are not part of the project. `train.py` reads
   them from the folder named by `DATASETS_DIR`. Set it in the shell or in
   `analysis/.env` (copy `.env.example`; a shell value wins). It has no default:
-  both fail if it is unset or empty.
+  it fails if it is unset or empty.
   - `pd_classification/pd_speech_features.csv` — the UCI "Parkinson's Disease
     Classification" dataset (756 recordings, 3 per person, 252 people of whom
     64 are healthy; CC BY 4.0). Training reads it. Download it from
     <https://archive.ics.uci.edu/dataset/470/parkinson+s+disease+classification>
     (the zip holds a `.rar` with the CSV).
-  - `parkinsons.data` — the older UCI Parkinson's voice dataset (195
-    recordings, 32 people). Only the notebook uses it.
 - `train.py` writes the best model to the file named by `AUDIO_MODEL_PATH`, set
   the same way and also without a default. A relative path is relative to
   `analysis/`. Point it at the file the API reads: the API takes the same
   variable from the root `.env` (required there too), where a relative path is
   relative to the directory it starts in, so the two values differ by the
   `../`.
-- `notebook.ipynb` — exploration plots of the features.
 - `train.py` — the training script. The work lives in the `parkinsons/`
   package: `Dataset` (loading), `Candidates` (the models), `CrossValidator`
   (held-out evaluation), `Reporter` (plots and metrics) and `ModelExporter`
@@ -58,6 +55,5 @@ unpickles the model. Change both pins together.
 
 ## Other targets
 
-- `make notebook` — open the exploration notebook.
 - `make test` — run the unit tests.
 - `make linter`, `make format`, `make static-check` — ruff and ty.
