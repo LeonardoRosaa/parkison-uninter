@@ -15,6 +15,11 @@ def required_env(name: str) -> str:
     return value
 
 
+def redis_url() -> str | None:
+    """A single connection URL (as hosting platforms provide), if configured."""
+    return os.getenv("REDIS_URL", "").strip() or None
+
+
 def cors_origins() -> list[str]:
     configured = required_env("CORS_ORIGINS")
     return [origin.strip() for origin in configured.split(",") if origin.strip()]

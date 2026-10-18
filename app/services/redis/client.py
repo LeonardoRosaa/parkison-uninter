@@ -5,7 +5,7 @@ import redis
 import redis.asyncio as aioredis
 
 from app.services.status import AnalysisStatus
-from app.settings import required_env
+from app.settings import redis_url, required_env
 
 STATUS_TTL = 3600  # seconds
 
@@ -30,6 +30,12 @@ def decode_result(raw: bytes) -> dict:
 
 class RedisClient:
     def __init__(self):
+        url = redis_url()
+        if url:
+            self._sync = redis.Redis.from_url(url)
+            self._async = aioredis.Redis.from_url(url)
+            return
+
         conn_kwargs = dict(
             host=required_env("REDIS_HOST"),
             port=int(required_env("REDIS_PORT")),

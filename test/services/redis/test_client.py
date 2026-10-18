@@ -26,6 +26,41 @@ def test_redis_client_builds_connection_from_env(monkeypatch):
     )
 
 
+def test_redis_client_connects_from_redis_url_without_the_separate_variables(
+    monkeypatch,
+):
+    sync_factory, async_factory = Mock(), Mock()
+    monkeypatch.setattr(redis_client_module.redis, "Redis", sync_factory)
+    monkeypatch.setattr(redis_client_module.aioredis, "Redis", async_factory)
+
+    for name in ("REDIS_HOST", "REDIS_PORT", "REDIS_DB", "REDIS_PASSWORD"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("REDIS_URL", "redis://red-abc:6379")
+
+    RedisClient()
+
+    sync_factory.from_url.assert_called_once_with("redis://red-abc:6379")
+    async_factory.from_url.assert_called_once_with("redis://red-abc:6379")
+
+
+def test_redis_client_ignores_a_blank_redis_url(monkeypatch):
+    redis_factory = Mock()
+    monkeypatch.setattr(redis_client_module.redis, "Redis", redis_factory)
+
+    monkeypatch.setenv("REDIS_URL", "  ")
+    monkeypatch.setenv("REDIS_HOST", "redis.local")
+    monkeypatch.setenv("REDIS_PORT", "6380")
+    monkeypatch.setenv("REDIS_DB", "2")
+    monkeypatch.setenv("REDIS_PASSWORD", "secret")
+
+    RedisClient()
+
+    redis_factory.from_url.assert_not_called()
+    redis_factory.assert_called_once_with(
+        host="redis.local", port=6380, db=2, password="secret"
+    )
+
+
 def _client_with_drivers(sync_driver=None, async_driver=None) -> RedisClient:
     client = RedisClient.__new__(RedisClient)
     client._sync = sync_driver
