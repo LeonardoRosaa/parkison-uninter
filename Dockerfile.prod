@@ -12,16 +12,13 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY ./pyproject.toml ./uv.lock ./.python-version /app/
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
+# No BuildKit cache mounts: Railway rejects them without a service-specific id.
+RUN uv sync --frozen --no-install-project --no-dev --no-cache
 
 COPY ./models /app/models
 COPY ./app /app/app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --no-cache
 
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
