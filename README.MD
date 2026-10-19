@@ -43,18 +43,23 @@ The production compose file additionally reads `PUBLIC_API_BASE`,
 `PUBLIC_WS_URL` and `PUBLIC_LOCALE` (baked into the frontend build), the
 `*_PORT` host mappings and `UVICORN_WORKERS`.
 
-## Deploy (Railway + Netlify)
+## Deploy on Railway
 
-- **API and Redis on Railway.** Build the API from `Dockerfile.prod` (set
-  `RAILWAY_DOCKERFILE_PATH=Dockerfile.prod`) and add Railway's Redis. Variables
-  on the API: `PORT=8000`, `UVICORN_WORKERS=1`, `AUDIO_MODEL_PATH=models/audio.pkl`,
-  `REDIS_URL=${{Redis.REDIS_URL}}` and `CORS_ORIGINS=<the Netlify URL>`. Health
-  check path: `/health`.
-- **Frontend on Netlify.** Base directory `frontend`, build command
-  `npm run build`, publish directory `dist`. Set `VITE_API_BASE` and
-  `VITE_WS_URL` to the Railway API URL (`https://...` and `wss://.../ws/{requestId}`);
-  they are baked in at build time. `frontend/public/_redirects` serves the app
-  for client-side routes such as `/analysis/<id>`.
+One Railway project with three services: Redis, the API and the frontend.
+
+- **Redis:** Railway's Redis database.
+- **API:** from the repo root, with `RAILWAY_DOCKERFILE_PATH=Dockerfile.prod`.
+  Variables: `PORT=8000`, `UVICORN_WORKERS=1`, `AUDIO_MODEL_PATH=models/audio.pkl`,
+  `REDIS_URL=${{Redis.REDIS_URL}}` and `CORS_ORIGINS=<the frontend URL>`.
+  Health check path `/health`; generate a public domain on port 8000.
+- **Frontend:** from the same repo with root directory `frontend` and
+  `RAILWAY_DOCKERFILE_PATH=Dockerfile.prod`. Variables: `PORT=4173`,
+  `VITE_API_BASE=https://<api domain>` and
+  `VITE_WS_URL=wss://<api domain>/ws/{requestId}`. These are baked in at build
+  time, so redeploy the frontend if the API domain changes. Generate a public
+  domain on port 4173.
+
+Create the API's domain first, since the frontend build needs it.
 
 ## Training the model
 
