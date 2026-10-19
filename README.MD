@@ -43,21 +43,18 @@ The production compose file additionally reads `PUBLIC_API_BASE`,
 `PUBLIC_WS_URL` and `PUBLIC_LOCALE` (baked into the frontend build), the
 `*_PORT` host mappings and `UVICORN_WORKERS`.
 
-## Deploy on Render (free tier)
+## Deploy (Railway + Netlify)
 
-[render.yaml](render.yaml) defines the API (Docker), the static frontend and a
-Key Value (Redis) instance.
-
-1. Push the repo to GitHub.
-2. In Render: **New → Blueprint**, pick the repo, and apply.
-3. Open `https://parkison-web.onrender.com`.
-
-Notes:
-- If Render adds a suffix to a service name, update `CORS_ORIGINS`,
-  `VITE_API_BASE` and `VITE_WS_URL` in `render.yaml` to the real URLs and push.
-- The free API sleeps after 15 idle minutes; the next request waits about a
-  minute for it to wake.
-- It runs one worker to stay within the free instance's memory.
+- **API and Redis on Railway.** Build the API from `Dockerfile.prod` (set
+  `RAILWAY_DOCKERFILE_PATH=Dockerfile.prod`) and add Railway's Redis. Variables
+  on the API: `PORT=8000`, `UVICORN_WORKERS=1`, `AUDIO_MODEL_PATH=models/audio.pkl`,
+  `REDIS_URL=${{Redis.REDIS_URL}}` and `CORS_ORIGINS=<the Netlify URL>`. Health
+  check path: `/health`.
+- **Frontend on Netlify.** Base directory `frontend`, build command
+  `npm run build`, publish directory `dist`. Set `VITE_API_BASE` and
+  `VITE_WS_URL` to the Railway API URL (`https://...` and `wss://.../ws/{requestId}`);
+  they are baked in at build time. `frontend/public/_redirects` serves the app
+  for client-side routes such as `/analysis/<id>`.
 
 ## Training the model
 
