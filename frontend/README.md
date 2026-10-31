@@ -27,6 +27,6 @@ The app uses these environment variables (see `.env.example`):
 
 - `VITE_API_BASE` (default: `http://localhost:8000`)
 - `VITE_WS_URL` (default: `ws://localhost:8000/ws/{requestId}`): `{requestId}` is replaced with the id the upload returned; a URL without the placeholder gets the id appended to its path
-- `VITE_LOCALE` (optional: `en` or `pt-BR`; if omitted or unsupported, the browser language is used)
+- `VITE_LOCALE` (optional: `en` or `pt-BR`; if omitted or unsupported, the app uses `pt-BR`)
 
 The locale can also be switched per page load with a URL query param, for example `?lang=pt-BR` or `?locale=pt`. The query param takes precedence over `VITE_LOCALE`.

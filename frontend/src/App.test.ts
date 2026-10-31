@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const uploadMock = vi.fn();
 const connectMock = vi.fn();
@@ -35,7 +35,7 @@ async function uploadFile(): Promise<void> {
 
   const file = new File(['audio'], 'voice.wav', { type: 'audio/wav' });
   await fireEvent.change(fileInput, { target: { files: [file] } });
-  await fireEvent.click(screen.getByRole('button', { name: 'Start Analysis' }));
+  await fireEvent.click(screen.getByRole('button', { name: 'Iniciar Análise' }));
 }
 
 describe('App', () => {
@@ -69,13 +69,13 @@ describe('App', () => {
     await waitFor(() =>
       expect(
         screen.getByRole('heading', {
-          name: 'Health check passed. Analysis completed successfully.'
+          name: 'Verificação aprovada. Análise concluída com sucesso.'
         })
       ).toBeInTheDocument()
     );
   });
 
-  it('returns to a cleared upload page from the New analysis button', async () => {
+  it('returns to a cleared upload page from the Nova análise button', async () => {
     uploadMock.mockResolvedValue({ uuid: REQUEST_ID, filename: 'voice.wav' });
     connectMock.mockReturnValue(vi.fn());
 
@@ -83,14 +83,14 @@ describe('App', () => {
     await uploadFile();
     await waitFor(() => expect(screen.getByTestId('spinner')).toBeInTheDocument());
 
-    await fireEvent.click(screen.getByRole('button', { name: 'New analysis' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Nova análise' }));
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Start Analysis' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Iniciar Análise' })).toBeDisabled()
     );
     expect(window.location.pathname).toBe('/');
     expect(screen.queryByText('voice.wav')).toBeNull();
-    expect(screen.getByText('Choose an audio file')).toBeInTheDocument();
+    expect(screen.getByText('Escolher arquivo de áudio')).toBeInTheDocument();
     expect(disconnectMock).toHaveBeenCalled();
   });
 
@@ -105,7 +105,7 @@ describe('App', () => {
     window.history.replaceState(null, '', '/');
     window.dispatchEvent(new PopStateEvent('popstate'));
 
-    await waitFor(() => expect(screen.getByText('Choose an audio file')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Escolher arquivo de áudio')).toBeInTheDocument());
     expect(screen.queryByText('voice.wav')).toBeNull();
   });
 
@@ -126,15 +126,60 @@ describe('App', () => {
     render(App);
 
     expect(window.location.pathname).toBe('/');
-    expect(screen.getByRole('tab', { name: 'Upload' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Enviar' })).toBeInTheDocument();
   });
 
-  it('sets the document language and title for the resolved locale', () => {
-    window.history.replaceState(null, '', '/?lang=pt-BR');
+  it('renders in pt-BR by default, even in an English browser', () => {
+    expect(navigator.language).toMatch(/^en/);
 
     render(App);
 
     expect(document.documentElement.lang).toBe('pt-BR');
     expect(document.title).toBe('Monitor de Análise de Fala');
+    expect(screen.getByRole('button', { name: 'Iniciar Análise' })).toBeInTheDocument();
+  });
+
+  it('renders in English from the lang URL param', () => {
+    window.history.replaceState(null, '', '/?lang=en');
+
+    render(App);
+
+    expect(document.documentElement.lang).toBe('en');
+    expect(document.title).toBe('Speech Analysis Monitor');
+    expect(screen.getByRole('button', { name: 'Start Analysis' })).toBeInTheDocument();
+  });
+
+  describe('with VITE_LOCALE=en', () => {
+    beforeEach(() => {
+      vi.stubEnv('VITE_LOCALE', 'en');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('renders in English', () => {
+      render(App);
+
+      expect(document.documentElement.lang).toBe('en');
+      expect(screen.getByRole('button', { name: 'Start Analysis' })).toBeInTheDocument();
+    });
+
+    it('lets the lang URL param override it', () => {
+      window.history.replaceState(null, '', '/?lang=pt-BR');
+
+      render(App);
+
+      expect(document.documentElement.lang).toBe('pt-BR');
+      expect(screen.getByRole('button', { name: 'Iniciar Análise' })).toBeInTheDocument();
+    });
+  });
+
+  it('falls back to pt-BR for an unsupported lang URL param', () => {
+    window.history.replaceState(null, '', '/?lang=fr');
+
+    render(App);
+
+    expect(document.documentElement.lang).toBe('pt-BR');
   });
 });
