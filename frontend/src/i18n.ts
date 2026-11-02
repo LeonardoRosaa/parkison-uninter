@@ -3,7 +3,6 @@ export type Locale = 'en' | 'pt-BR';
 interface ResolveLocaleOptions {
   preferredLocale?: string | null;
   search?: string | null;
-  browserLocale?: string | null;
 }
 
 export interface AudioInputTexts {
@@ -300,8 +299,8 @@ function parseLocaleFromSearch(search: string | null | undefined): Locale | null
 
 /**
  * The locale to render in. A `?locale=` / `?lang=` query param wins, then the
- * configured locale, then the browser language; anything unsupported is
- * skipped, and English is the last resort.
+ * configured locale; anything unsupported is skipped, and Brazilian Portuguese
+ * is the default.
  */
 export function resolveLocale(
   preferredLocaleOrOptions?: string | ResolveLocaleOptions | null
@@ -312,15 +311,8 @@ export function resolveLocale(
       : preferredLocaleOrOptions;
 
   const search = options.search ?? (typeof location !== 'undefined' ? location.search : null);
-  const browserLocale =
-    options.browserLocale ?? (typeof navigator !== 'undefined' ? navigator.language : null);
 
-  return (
-    parseLocaleFromSearch(search) ??
-    parseSupportedLocale(options.preferredLocale) ??
-    parseSupportedLocale(browserLocale) ??
-    'en'
-  );
+  return parseLocaleFromSearch(search) ?? parseSupportedLocale(options.preferredLocale) ?? 'pt-BR';
 }
 
 export function getTranslations(locale: Locale): Translations {
