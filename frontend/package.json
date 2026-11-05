@@ -12,15 +12,18 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^5.0.4",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.3.1",
-    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tsconfig/svelte": "^5.0.4",
     "jsdom": "^25.0.1",
-    "svelte-check": "^4.0.0",
     "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
     "typescript": "^5.9.2",
     "vite": "^5.2.0",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "posthog-js": "^1.446.0"
   }
 }
