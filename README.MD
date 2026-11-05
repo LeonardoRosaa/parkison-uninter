@@ -40,7 +40,8 @@ Services:
 | `WS_TIMEOUT_SECONDS` | `300` | How long a WebSocket waits for a result |
 
 The production compose file additionally reads `PUBLIC_API_BASE`,
-`PUBLIC_WS_URL` and `PUBLIC_LOCALE` (baked into the frontend build), the
+`PUBLIC_WS_URL`, `PUBLIC_LOCALE`, `PUBLIC_POSTHOG_KEY` and
+`PUBLIC_POSTHOG_HOST` (baked into the frontend build), the
 `*_PORT` host mappings and `UVICORN_WORKERS`.
 
 ## Deploy on Railway
@@ -54,10 +55,12 @@ One Railway project with three services: Redis, the API and the frontend.
   Health check path `/health`; generate a public domain on port 8000.
 - **Frontend:** from the same repo with root directory `frontend` and
   `RAILWAY_DOCKERFILE_PATH=Dockerfile.prod`. Variables: `PORT=4173`,
-  `VITE_API_BASE=https://<api domain>` and
-  `VITE_WS_URL=wss://<api domain>/ws/{requestId}`. These are baked in at build
-  time, so redeploy the frontend if the API domain changes. Generate a public
-  domain on port 4173.
+  `VITE_API_BASE=https://<api domain>`,
+  `VITE_WS_URL=wss://<api domain>/ws/{requestId}` and
+  `VITE_POSTHOG_KEY=<PostHog project token>` (optional; also
+  `VITE_POSTHOG_HOST`, default `https://us.i.posthog.com`). These are baked in
+  at build time, so redeploy the frontend if the API domain changes. Generate a
+  public domain on port 4173.
 
 Create the API's domain first, since the frontend build needs it.
 
